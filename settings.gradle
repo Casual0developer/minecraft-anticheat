@@ -1,0 +1,12 @@
+// =====================================================================
+// AntiCheat — Bukkit plugin for Spigot/Paper 1.21.1
+// =====================================================================
+
+pluginManagement {
+    repositories {
+        gradlePluginPortal()
+        mavenCentral()
+    }
+}
+
+rootProject.name = 'anticheat'

@@ -1,0 +1,256 @@
+# =============================================
+#   AntiCheat Configuration - Bukkit 1.21.1
+# =============================================
+
+settings:
+  # ── Fly detection ────────────────────────────────────────────────────────
+  # VL points before banning for fly (3 = fast ban, raise to 5 if lag issues)
+  fly-vl-threshold: 3
+  # How many ticks between VL decay (1 second = 20 ticks)
+  vl-decay-ticks: 20
+  # Max upward velocity allowed per tick before flagging
+  max-upward-velocity: 0.42
+  # Leniency ticks after a jump (or block break beneath feet) before checking fly
+  jump-grace-ticks: 8
+  # Leniency ticks after taking damage (knockback)
+  damage-grace-ticks: 10
+  # Leniency ticks after teleport
+  teleport-grace-ticks: 20
+  # Leniency ticks after joining (give client time to sync)
+  join-grace-ticks: 20
+  # ── Scaffold detection ───────────────────────────────────────────────────
+  # VL points before banning for scaffold (5 = ban after 5 flags; raise to 7 on laggy servers)
+  scaffold-vl-threshold: 5
+
+  # ── Speed detection — relaxed for velocity false flags ────────────────
+  # Previous strict 0.285+0.015 flagged legit strafe on lag. Now lenient to reduce false positives.
+  # Lowered by 2 (was 4 → now 2) per request — flags 2 fewer before ban, more sensitive
+  # VL points before banning for speed (2 = ban on 2nd flag)
+  speed-vl-threshold: 2
+  speed-base: 0.315
+  speed-per-level: 0.065
+  speed-air-add: 0.235
+  speed-tolerance: 0.065
+  speed-fast-ticks: 3
+
+  # ── AntiKnockback tuning — relaxed to reduce velocity false flags ─────
+  # Previous strict 0.28 caught 20% reduction but flagged lag. Now lenient.
+  antikb-min-displacement: 0.12
+  antikb-partial-displacement: 0.18
+  antikb-partial-vl: 2
+
+  # ── Reach detection ──────────────────────────────────────────────────────
+  # VL points before banning for reach (2 = ban on 2nd flag)
+  reach-vl-threshold: 2
+  # Extra static distance buffer on top of vanilla 3.0 blocks
+  # Dynamic ping compensation is applied automatically on top of this.
+  # Raise to 0.3-0.5 only if legitimate players on very high ping still false-flag.
+  reach-lag-buffer: 0.0
+
+  # ── Click-Teleport (Blink) detection ─────────────────────────────────────
+  # VL points before banning for click-tp (3 = ban after 3 flags)
+  clicktp-vl-threshold: 3
+  # Extra static distance buffer on the interact-distance check.
+  # Plugin already allows up to 6.0b survival / 7.0b creative before flagging.
+  # Raise to 0.5-1.0 only if legitimate high-ping players false-flag.
+  clicktp-lag-buffer: 0.0
+  # L1 — Per-move (single position-packet) delta that is always a teleport.
+  # Walk 0.21, sprint 0.28, sprint-jump 0.6, ice ~1.0, elytra cruise ~2.0.
+  # 2.5 = a click-tp of 3+ blocks always trips this. Raise toward 3.5 only
+  # if rocket-boosted elytra players false-flag.
+  clicktp-blink-threshold: 2.5
+  # L2 — From-rest burst: a walking/standing player that suddenly moves
+  # more than this distance in ONE tick. Vanilla input can't accelerate
+  # from rest above ~0.5 b/t in a tick, so 1.5 is safe.
+  clicktp-fromrest-trigger: 1.5
+  # L3 — Acceleration spike: a single-tick velocity jump above this is
+  # impossible. Rocket firework gives +1.5 b/t max; ice / slime / jump
+  # accelerate by ≤ 0.5 b/t. 2.0 catches teleports regardless of starting
+  # speed (e.g. mid-sprint warps that L1 misses).
+  clicktp-accel-trigger: 2.0
+
+  # ── Hitbox (extender / aim-miss) detection ───────────────────────────────
+  # Tolerance (b) on the victim's bounding box. 0.1 = strict — a hitbox
+  # extender of just 0.1 b will flag. Flicks don't false-flag because the
+  # listener also tries the LAST 5 recent look directions per attacker,
+  # so the pre-flick look catches legit hits.
+  hitbox-tolerance: 0.1
+  # 2 = ban on second confirmed off-aim hit. Absorbs the rare network-jitter
+  # false miss; a real hitbox extender fires off-aim every hit so the second
+  # confirmed miss arrives within a couple of swings anyway.
+  hitbox-vl-threshold: 2
+
+  # ── VClip (vertical-teleport) detection ──────────────────────────────────
+  # Asymmetric Δy triggers:
+  #   - Upward 1+ block in one move = vclip (vanilla jump caps at 0.42)
+  #   - Downward 2+ blocks in one move = vclip (vanilla terminal fall ≈ 1.95)
+  vclip-up-trigger: 1.0
+  vclip-down-trigger: 2.0
+  vclip-vl-threshold: 2
+
+  # ── HFlight (horizontal flight / hover-walk) detection ───────────────────
+  # Consecutive flat-airborne move events required. 4 = ~0.2s — fires faster
+  # than SpeedListener so horizontal cheat-fly is correctly labelled HFlight.
+  hflight-tick-threshold: 4
+  hflight-vl-threshold: 3
+
+  # ── Crit (on-ground critical) detection ──────────────────────────────────
+  # 1 = first-hit ban. Damage-ratio check is precise (looks for 1.5x base);
+  # legitimate hits never produce that ratio on-ground in a non-crit state.
+  crit-vl-threshold: 1
+
+  # ── Impossible Sprint detection ──────────────────────────────────────────
+  # 2 = ban on 2nd flag. Sprinting while blocking, sneaking, or using items
+  # is server-impossible. Requires 5 ticks persistence + 0.5s cooldown between
+  # flags to absorb packet-ordering edge cases (e.g. eating finish).
+  impossiblesprint-vl-threshold: 2
+
+  # ── Ranged Reach (bow/trident) detection ─────────────────────────────────
+  # Max eye-to-hitbox distance for projectile damage. 6.0 blocks is generous
+  # — legitimate bow combat is point-blank to mid-range. 15.0+ = instant ban.
+  rangedreach-max-distance: 6.0
+  rangedreach-instant-ban: 15.0
+  rangedreach-vl-threshold: 2
+
+  # ── NoWeb (cobweb bypass) detection ─────────────────────────────────────
+  # Max horizontal speed while inside a cobweb (vanilla caps at ~0.05 b/t).
+  # 0.10 is generous. Also detects jumping inside cobweb (impossible).
+  # 3 consecutive flagged ticks before ban.
+  noweb-max-speed: 0.10
+  noweb-vl-threshold: 3
+
+  # ── Boat Fly detection ──────────────────────────────────────────────────
+  # Detects flying while riding a boat. Boats cannot fly in vanilla.
+  # Fixed: ledge grace 14 ticks, max air ticks increased to 12 to avoid off-ledge false flags.
+  # 2 = ban on 2nd flag. Max upward speed = 0.1 b/t.
+  boatfly-vl-threshold: 2
+  boatfly-max-air-ticks: 12
+  boatfly-hover-ticks: 6
+  boatfly-ledge-grace: 14
+
+  # ── Jetpack detection ──────────────────────────────────────────────────
+  # Detects sustained vertical thrust without elytra/firework. 2 = ban on 2nd flag.
+  jetpack-vl-threshold: 2
+
+  # ── AirJump (double-jump) detection ───────────────────────────────────
+  # Detects mid-air jumps / double jumps. Vanilla only allows jumping while onGround.
+  # 2-3 consecutive mid-air upward impulses → ban.
+  airjump-min-delta: 0.28
+  airjump-min-airticks: 6
+  airjump-vl-threshold: 2
+
+  # ── Physics Simulation (NEW — Speed/Flight/Jesus/BoatFly + Ice/Attributes) ─
+  # Unified tick-perfect simulation accounting for:
+  #   ice (ICE 1.28x, PACKED 1.45x, BLUE 1.85x/1.65x edge, FROSTED 1.28x) — reduced to fix 70x ice false
+  #   attributes (GENERIC_MOVEMENT_SPEED ratio), sprint 1.3x, speed potion 0.2/lvl
+  #   soul speed (lvl*0.33 on soul sand/soil), honey 0.4x, jump airborne +0.08
+  speed-sim-vl: 3
+  speed-sim-tolerance: 0.07
+  jesus-vl: 3
+  spider-sim-vl: 2
+  glide-sim-vl: 2
+  levitation-sim-vl: 2
+
+  # ── Anti-Cactus detection ───────────────────────────────────────────────
+  # Deals 2x cactus damage (every 500ms) to players touching cactus blocks.
+  # Ban at 5 flags (prolonged bypass). Set enabled: false to disable.
+  anticactus:
+    enabled: true
+    damage-multiplier: 2.0
+    vl-threshold: 5
+
+
+
+ban:
+  # Duration in days (set to 0 or -1 for permanent)
+  duration-days: 30
+
+  # Ban by IP address in addition to username + UUID
+  ip-ban: true
+
+  # Message shown on the ban screen (supports & color codes)
+  reason: "&cYou have been banned from this server.\n\n&fReason: &cUsing a modified client\n\n&7Your ban expires in &f30 days&7."
+
+  # Message shown on the kick screen when punishment mode is "kick"
+  kick-reason: "&cYou have been kicked from this server.\n\n&fReason: &cUsing a modified client"
+
+  # Broadcast message to online players when someone is banned
+  broadcast: "&8[&cAntiCheat&8] &f{player} &7has been banned for &cusing a modified client&7."
+
+  # ── Proxy / VPN detection ─────────────────────────────────────────────────
+  # Uses ip-api.com (free, no key needed for low volume).
+  # When enabled: each player's IP is checked on ban; if a proxy/VPN is
+  # detected the check name includes "+ Proxy/VPN" in the ban record.
+  # Note: this makes an async HTTP request on ban — not on every join.
+  proxy-check:
+    enabled: false
+
+branding:
+  # Custom nickname shown everywhere: console, in-game alerts, broadcasts, bans & Discord embeds
+  # Set via /anticheat nickname <name> — supports & color codes and spaces (wrap in quotes)
+  # Examples: Sentinel, "&cSentinel", "&6My &eServer &cAC"
+  # Leave empty for default "AntiCheat"
+  nickname: ""
+
+discord:
+  # Discord webhook integration — sends every flag with player, IP & reason + custom nickname
+  # Set with /anticheat discord webhook https://discord.com/api/webhooks/<id>/<token>
+  enabled: true
+  webhook-url: ""
+  # Display name for webhook messages (shown as bot name in Discord)
+  # Leave empty to automatically use the /anticheat nickname (branding.nickname)
+  username: ""
+  # Optional avatar URL for webhook (leave empty for default)
+  avatar-url: ""
+  # Optional server name shown in embed (leave empty to hide)
+  server-name: ""
+  # Send webhook on every flag (true) or only on ban/kick (false)
+  send-on-flag: true
+  # Cooldown between alerts for same player (ms) to avoid spam
+  cooldown-ms: 350
+
+messages:
+  prefix: "&8[&cAntiCheat&8] "
+  reload: "&aConfiguration reloaded successfully."
+  status-header: "&8--- &cAntiCheat Status &8---"
+  whitelist-add: "&aAdded {player} to the bypass whitelist."
+  whitelist-remove: "&cRemoved {player} from the bypass whitelist."
+  no-permission: "&cYou do not have permission to use this command."
+
+checks:
+  # Global check toggles — disable noisy checks on laggy servers
+  fly: true
+  speed: true
+  reach: true
+  scaffold: true
+  airplace: true
+  nofall: true
+  crit: true
+  timer: true
+  combat-simulation: true
+  movement-simulation: true
+  triggerbot: true
+  boatfly: true
+  jetpack: true
+  elytraflight: true
+  fastbreak: true
+  antiknockback: true
+  mace: true
+  fastladder: true
+  impossiblesprint: true
+  inventoryattack: true
+  inventorywalk: true
+  noweb: true
+  snowwalk: true
+  misc: true
+  vclip: true
+  clicktp: true
+  airjump: true
+  physics-simulation: true
+  levitation-simulation: true
+  # Simulation accuracy (higher = more precise but slightly more CPU)
+  simulation-precision: high  # low | medium | high
+
+debug:
+  # Set to true to log all violations to console (useful for tuning thresholds)
+  enabled: false

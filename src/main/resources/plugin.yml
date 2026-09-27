@@ -1,0 +1,18 @@
+name: AntiCheat
+version: '${version}'
+main: dev.anticheat.AntiCheatPlugin
+api-version: '1.21'
+description: Lightweight anti-cheat for Bukkit 1.21.1
+authors: [AntiCheatDev]
+commands:
+  anticheat:
+    description: AntiCheat admin commands
+    usage: /anticheat <reload|status|nickname <name>|discord webhook <url|test|status|clear>|punishments|history <player>|unban <player>|whitelist <add|remove|list> [player]>
+    permission: anticheat.admin
+permissions:
+  anticheat.admin:
+    description: Full access to AntiCheat commands
+    default: op
+  anticheat.bypass:
+    description: Bypass all AntiCheat checks
+    default: false
